@@ -1,0 +1,57 @@
+case:
+	LocalVar_1672 = _T;
+	LocalVar_1672.["MATCHMAKING_QUICKMATCH_GAMEMODE"] = 9;
+	LocalVar_1672 = _T;
+	LocalVar_1672.["MATCHMAKING_PRIVATE_GAMEMODE"] = 3;
+	LocalVar_1672 = _T;
+	LocalVar_1672.["MATCHMAKING_INVITE_ONLY_GAMEMODE"] = 4;
+	LocalVar_1672 = _T;
+	LocalVar_1672.["MATCHMAKING_OFFLINE_GAMEMODE"] = 0;
+	LocalVar_1672 = _T;
+	LocalVar_1672.["MATCHMAKING_PVP_GAMEMODE"] = 6;
+	LocalVar_1672 = _T;
+	LocalVar_1672.["REGION_ID_DOJO"] = 14;
+should be:
+	_T.["MATCHMAKING_QUICKMATCH_GAMEMODE"] = 9;
+	_T.["MATCHMAKING_PRIVATE_GAMEMODE"] = 3;
+	_T.["MATCHMAKING_INVITE_ONLY_GAMEMODE"] = 4;
+	_T.["MATCHMAKING_OFFLINE_GAMEMODE"] = 0;
+	_T.["MATCHMAKING_PVP_GAMEMODE"] = 6;
+	_T.["REGION_ID_DOJO"] = 14;
+	
+case:
+	{LocalVar_1673} = LocalVar_1673.runMainMethod(LocalVar_1674);
+	LocalVar_1672.["GHOST_TOWER_MISSION_TAG"] = LocalVar_1673;
+should be:
+	LocalVar_1672.["GHOST_TOWER_MISSION_TAG"] = LocalVar_1673.runMainMethod(LocalVar_1674);
+	
+case:
+	LocalVar_1672 = _T;
+	LocalVar_1673 = _T;
+	LocalVar_1673 = LocalVar_1673.["MATCHMAKING_QUICKMATCH_GAMEMODE"];
+	LocalVar_1672.["gActiveMatchMakingMode"] = LocalVar_1673;
+should be:
+	_T.["gActiveMatchMakingMode"] = _T.["MATCHMAKING_QUICKMATCH_GAMEMODE"];
+	
+case:
+	LocalVar_1672 = _T;
+	LocalVar_1673 = new KeyValueMap();
+	LocalVar_1672.["CachedAlerts"] = LocalVar_1673;
+should be:
+	_T.["CachedAlerts"] = new KeyValueMap();
+	
+case:	//one method write, many reads
+	LocalVar_1756 = new KeyValueMap();
+	LocalVar_1756.["Loader"] = NULL VALUED;
+	LocalVar_1756.["IsLoading"] = false;
+	LocalVar_1756.["QueuedTransmission"] = NULL VALUED;
+should be:
+	LocalVar_1756 = new KeyValueMap();
+	LocalVar_1756.["Loader"] = NULL VALUED;
+	LocalVar_1756.["IsLoading"] = false;
+	LocalVar_1756.["QueuedTransmission"] = NULL VALUED;
+	
+conclusions:
+	single write, single read: should be inlined
+	single write, many read: inline if write wasn't method call or instantiation
+	store IO as varId -> writeTime -> {writeVar, allSubsequentReads}

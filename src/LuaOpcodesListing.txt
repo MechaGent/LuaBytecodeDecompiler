@@ -1,0 +1,100 @@
+The opcodes and a brief description of what the instructions do are given as an enum in lopcodes.h.
+	We have grouped them in groups of related functionality.
+	The description (taken verbatim from lopcodes.h) uses the following notation,
+		in which B, Bx etc refer not to numbers encoded in bits,
+		but to the numbers visible in the disassembly shown by luac.
+
+R(A), R(B), R(C)
+    The register numbered A, B or C. 
+Kst(Bx)
+    The constant numbered |Bx|. 
+KPROTO[Bx]
+    The function prototype numbered |Bx|. 
+RK(B), RK(C)
+    The register numbered B or C; if B or C is negative, the constant numbered |B| or |C|. 
+FPF
+    Fields per flush. Read NFI's explanation. 
+UpValue[B]
+    The upvalue numbered B. 
+pc
+    Program counter: which instruction will be executed next. 
+closure
+    Make a closure (function plus upvalues). 
+
+BYTECODES
+
+Loading constants
+opcode 	name and args 	description
+1 	LOADK(A,Bx) 	R(A) := Kst(Bx)
+2 	LOADKX(A) 	R(A) := Kst(extra arg)
+39 	EXTRAARG(Ax) 	extra (larger) argument for previous opcode
+Unary functions
+opcode 	name and args 	description
+0 	MOVE(A,B) 	R(A) := R(B)
+19 	UNM(A,B) 	R(A) := -R(B)
+20 	NOT(A,B) 	R(A) := not R(B)
+21 	LEN(A,B) 	R(A) := length of R(B)
+Binary functions
+opcode 	name and args 	description
+13 	ADD(A,B,C) 	R(A) := RK(B) + RK(C)
+14 	SUB(A,B,C) 	R(A) := RK(B) - RK(C)
+15 	MUL(A,B,C) 	R(A) := RK(B) * RK(C)
+16 	DIV(A,B,C) 	R(A) := RK(B) / RK(C)
+17 	MOD(A,B,C) 	R(A) := RK(B) % RK(C)
+18 	POW(A,B,C) 	R(A) := RK(B) ^ RK(C)
+Table access
+opcode 	name and args 	description
+7 	GETTABLE(A,B,C) 	R(A) := R(B)[RK(C)]
+10 	SETTABLE(A,B,C) 	R(A)[RK(B)] := RK(C)
+11 	NEWTABLE(A,B,C) 	R(A) := {} (size = B,C)
+12 	SELF(A,B,C) 	R(A+1) := R(B); R(A) := R(B)[RK(C)]
+36 	SETLIST(A,B,C) 	R(A)[(C-1)*FPF+i] := R(A+i), 1 <= i <= B)
+Dealing with tuples
+opcode 	name and args 	description
+4 	LOADNIL(A,B) 	R(A), R(A+1), ..., R(A+B) := nil
+22 	CONCAT(A,B,C) 	R(A) := R(B).. ... ..R(C)
+29 	CALL(A,B,C) 	R(A), ... ,R(A+C-2) := R(A)(R(A+1), ... ,R(A+B-1))
+31 	RETURN(A,B) 	return R(A), ... ,R(A+B-2) (see note)
+38 	VARARG(A,B) 	R(A), R(A+1), ..., R(A+B-2) = vararg
+30 	TAILCALL(A,B,C) 	return R(A)(R(A+1), ... ,R(A+B-1))
+34 	TFORCALL(A,C) 	R(A+3), ... ,R(A+2+C) := R(A)(R(A+1), R(A+2));
+Interaction with upvalues
+opcode 	name and args 	description
+5 	GETUPVAL(A,B) 	R(A) := UpValue[B]
+9 	SETUPVAL(A,B) 	UpValue[B] := R(A)
+6 	GETTABUP(A,B,C) 	R(A) := UpValue[B][RK(C)]
+8 	SETTABUP(A,B,C) 	UpValue[A][RK(B)] := RK(C)
+Logical functions
+opcode 	name and args 	description
+3 	LOADBOOL(A,B,C) 	R(A) := (Bool)B; if (C) pc++
+24 	EQ(A,B,C) 	if ((RK(B) == RK(C)) ~= A) then pc++
+25 	LT(A,B,C) 	if ((RK(B) < RK(C)) ~= A) then pc++
+26 	LE(A,B,C) 	if ((RK(B) <= RK(C)) ~= A) then pc++
+27 	TEST(A,C) 	if not (R(A) <=> C) then pc++
+28 	TESTSET(A,B,C) 	if (R(B) <=> C) then R(A) := R(B) else pc++
+Branches, loops and closures
+opcode 	name and args 	description
+23 	JMP(A,sBx) 	pc+=sBx; if (A) close all upvalues >= R(A) + 1
+32 	FORLOOP(A,sBx) 	R(A)+=R(A+2); if R(A) <?= R(A+1) then
+		{ pc+=sBx; R(A+3)=R(A) }
+33 	FORPREP(A,sBx) 	R(A)-=R(A+2); pc+=sBx
+35 	TFORLOOP(A,sBx) 	if R(A+1) ~= nil then
+		{ R(A)=R(A+1); pc += sBx }
+37 	CLOSURE(A,Bx) 	R(A) := closure(KPROTO[Bx])
+Notes
+
+Taken nearly verbatim from lopcodes.h.
+
+    In CALL, if (B == 0) then B = top. If (C == 0), then top is set to last_result+1, so next open instruction (CALL, RETURN, SETLIST) may use top.
+
+    In VARARG, if (B == 0) then use actual number of varargs and set top (like in CALL with C == 0).
+
+    In RETURN, if (B == 0) then return up to top.
+
+    In SETLIST, if (B == 0) then B =top; if (C == 0`) then next 'instruction' is EXTRAARG(real C).
+
+    In LOADKX, the next 'instruction' is always EXTRAARG.
+
+    For comparisons, A specifies what condition the test should accept (true or false).
+
+    All 'skips' (pc++) assume that next instruction is a jump.

@@ -1,0 +1,59 @@
+On Returning Multiple Variables
+	When we call a function as a statement, Lua discards all of its results. 
+	When we use a call as an expression, Lua keeps only the first result. 
+	We get all results only when the call is the last (or the only) expression in a list of expressions. 
+	These lists appear in four constructions in Lua: multiple assignment, arguments to function calls, table constructors, and return statements.
+	To illustrate all these uses, we will assume the following definitions for the next examples:
+		function foo0 () end                  -- returns no results
+	    function foo1 () return 'a' end       -- returns 1 result
+	    function foo2 () return 'a','b' end   -- returns 2 results
+	
+		Multiple Assignment:
+			a function call as the last (or only) expression produces as many results as needed to match the variables:
+				x,y = foo2()        -- x='a', y='b'
+				x = foo2()          -- x='a', 'b' is discarded
+				x,y,z = 10,foo2()   -- x=10, y='a', z='b'
+		Arguments to Function Calls: 
+			If a function has no results, or not as many results as we need, Lua produces nils:
+				x,y = foo0()      -- x=nil, y=nil
+				x,y = foo1()      -- x='a', y=nil
+				x,y,z = foo2()    -- x='a', y='b', z=nil
+		Function Calls, where the call:
+			is !(the last element in a list) || (used in an expression) || (enclosed within an extra set of parentheses): 
+				always produces one result:
+					x,y = foo2(), 20      -- x='a', y=20
+					x,y = foo0(), 20, 30  -- x=nil, y=20, 30 is discarded
+					
+					print(foo2() .. "x")   -->  ax	-- only the 'a' is used
+					
+					a = {foo0(), foo2(), 4}   -- a[1] = nil, a[2] = 'a', a[3] = 4
+			is (the last or only element in the list) 
+				|| ((used in a constructor) && (the last or only element in the list))  
+				|| (is returning a function call):
+					all results from the call go as arguments.
+						print(foo0())          -->
+						print(foo1())          -->  a
+						print(foo2())          -->  a   b
+						print(foo2(), 1)       -->  a   1
+						print(foo2() .. "x")   -->  ax
+						
+						a = {foo0()}         -- a = {}  (an empty table)
+						a = {foo1()}         -- a = {'a'}
+						a = {foo2()}         -- a = {'a', 'b'}
+						
+						print((foo0()))        --> nil
+				    	print((foo1()))        --> a
+				    	print((foo2()))        --> a
+			is being itself returned:
+				all results are returned.
+					function foo (i)
+						if i == 0 then return foo0()
+						elseif i == 1 then return foo1()
+						elseif i == 2 then return foo2()
+						end
+					end
+					print(foo(1))     --> a
+					print(foo(2))     --> a  b
+					print(foo(0))     -- (no results)
+					print(foo(3))     -- (no results)
+					

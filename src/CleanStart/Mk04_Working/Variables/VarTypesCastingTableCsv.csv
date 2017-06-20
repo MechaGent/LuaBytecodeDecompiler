@@ -1,0 +1,16 @@
+,Mystery,String,Bool,Int,Float,Null,Formula,TableObject,TableElement,FunctionObject,Math_Constant,Math_Variable,Math_Unknown,LuaObject,ComparableVar
+Mystery,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary
+String,Legal,Unnecessary,Coerce,Coerce,Coerce,Coerce,Coerce,Coerce,Coerce,Coerce,Coerce,Coerce,Coerce,Coerce,Coerce
+Bool,Legal,Legal,Unnecessary,Coerce,Coerce,Illegal,Coerce,Illegal,Legal,Illegal,Legal,Legal,Legal,Illegal,Legal
+Int,Legal,Legal,Legal,Unnecessary,Coerce,Illegal,Coerce,Illegal,Legal,Illegal,Legal,Legal,Legal,Illegal,Legal
+Float,Legal,Legal,Legal,Coerce,Unnecessary,Illegal,Coerce,Illegal,Legal,Illegal,Legal,Legal,Legal,Illegal,Legal
+Null,Legal,Coerce,Illegal,Illegal,Illegal,Unnecessary,Illegal,Unnecessary,Legal,Unnecessary,Illegal,Illegal,Illegal,Unnecessary,Illegal
+Formula,Legal,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Illegal,Unnecessary,Illegal,Legal,Illegal,Legal,Legal,Legal,Illegal,Legal
+TableObject,Legal,wasCoercedTo,isString,isString,isString,Illegal,Illegal,Unnecessary,Legal,Legal,Illegal,isString,Illegal,Legal,Legal
+TableElement,Legal,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Legal
+FunctionObject,Legal,wasCoercedTo,Illegal,Illegal,Illegal,Illegal,Illegal,Illegal,Legal,Unnecessary,Illegal,Illegal,Illegal,Legal,Legal
+Math_Constant,Legal,Coerce,Unnecessary,Unnecessary,Unnecessary,Illegal,Unnecessary,Illegal,Legal,Illegal,Unnecessary,Legal,Legal,Illegal,Legal
+Math_Variable,Legal,Coerce,Unnecessary,Unnecessary,Unnecessary,Illegal,Unnecessary,Illegal,Legal,Illegal,Unnecessary,Unnecessary,Legal,Illegal,Legal
+Math_Unknown,Legal,Coerce,Unnecessary,Unnecessary,Unnecessary,Illegal,Unnecessary,Illegal,Legal,Illegal,Unnecessary,Unnecessary,Unnecessary,Illegal,Legal
+LuaObject,Legal,Unnecessary,Illegal,Illegal,Illegal,Illegal,Illegal,Unnecessary,Legal,Unnecessary,Illegal,Illegal,Illegal,Unnecessary,Legal
+ComparableVar,Legal,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Legal,Unnecessary,Unnecessary,Legal,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary,Unnecessary
